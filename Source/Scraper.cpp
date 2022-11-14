@@ -1,4 +1,6 @@
 #include "Scraper.hpp"
+#include "Useful.hpp"
+
 #include <vector>
 #include <iostream>
 
@@ -17,7 +19,7 @@ Scraper::Scraper(uint16_t day, uint16_t year)
 
 	// ConfigJson = nlohmann::json::parse(buffer.str());
 
-	GetLastMessage();
+	cout << GetLastMessage() << endl;
 	/*
 	ActivatePythonScraper();
 	while (!PythonScraperIsFinished());
@@ -30,9 +32,9 @@ void Scraper::SendMessage(string message)
 	string finalMessage;
 	
 	// Formatting
-	finalMessage = ConfigJson["Communication"]["Formatting"]["Prefix"].dump() +
+	finalMessage = get_json_value(ConfigJson["Communication"]["Formatting"]["Prefix"]) +
 				   message + 
-				   ConfigJson["Communication"]["Formatting"]["Postfix"].dump();
+				   get_json_value(ConfigJson["Communication"]["Formatting"]["Postfix"]);
 	
 	fstream communicationFile = OpenCommunicationFile();
 	communicationFile << finalMessage;
@@ -41,13 +43,11 @@ void Scraper::SendMessage(string message)
 
 string Scraper::GetLastMessage()
 {
-	//string communicationFileData = GetCommunicationFileData();
-	string communicationFileData = "{11:20:17}{Python}HelloWorld!\n{11:21:28}{CPP}HelloWorld!\n{10:23:-2}{Python}I travelled in time!";
+	string communicationFileData = GetCommunicationFileData();
 
 	// splitting the messages
 	vector<string> messages;
-	string delimiter = ConfigJson["Communication"]["Formatting"]["Postfix"].dump();
-	delimiter = delimiter.substr(1, delimiter.length() - 2);
+	string delimiter = get_json_value(ConfigJson["Communication"]["Formatting"]["Postfix"]);
 	size_t pos = 0;
 	while ((pos = communicationFileData.find(delimiter)) != string::npos)
 	{
@@ -57,29 +57,24 @@ string Scraper::GetLastMessage()
 	messages.push_back(communicationFileData);
 
 	// finding the last message
-	string messagePrefix = ConfigJson["Communication"]["Formatting"]["Postfix"];
-	size_t originIndex = 0;
-	size_t originPosition = messagePrefix.find("Origin");
-	char parameterDelimiters[2] = {ConfigJson["ParameterStart"].dump()[1],
-									ConfigJson["ParameterEnd"].dump()[1]	};
-	pos = 0;
-	while ((pos = messagePrefix.find(parameterDelimiters[1], pos + 1) < originPosition))
-		originIndex++;
-	size_t index;
+	size_t originIndex = ConfigJson["Communication"]["Formatting"]["Parameters"]["Origin"];
+	string parameterDelimiters[2] = { get_json_value(ConfigJson["Communication"]["Formatting"]["ParameterStart"]),
+									  get_json_value(ConfigJson["Communication"]["Formatting"]["ParameterEnd"]) };
+	messages.reserve(); // reordering so the last messages are on top
 	for (string message : messages)
 	{
-		index = 0;
 		pos = 0;
-		while (index < originIndex)
-		{
+		for (size_t i = 0; i < originIndex; i++)
 			pos = message.find(parameterDelimiters[0], pos + 1);
-			index++;
+		string messageOrigin = message.substr(pos + 1, message.find(parameterDelimiters[1], pos) - pos - 1);
+		if (messageOrigin == get_json_value(ConfigJson["Communication"]["Origins"]["WebScraper"]))
+		{
+			string prefix = get_json_value(ConfigJson["Communication"]["Formatting"]["Prefix"]);
+			return message.substr(message.find(prefix) + prefix.length(), string::npos);
 		}
-		message = message.substr(pos, message.find(parameterDelimiters[1]) - pos);
-		cout << message << endl;
 	}
 
-	return "";
+	return "NO_MSG";
 }
 
 fstream Scraper::OpenCommunicationFile()

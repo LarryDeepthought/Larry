@@ -1,5 +1,8 @@
-#include <string>
+#pragma once
+
 #include "json.hpp"
+
+#include <string>
 #include <fstream>
 
 class Scraper

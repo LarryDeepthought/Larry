@@ -1,15 +1,24 @@
 {
-  "ParameterStart": "{",
-  "ParameterEnd": "}",
   "Scraper": {
     "WebsiteURL": "https://adventofcode.com/{Year}/day/{Day}"
   },
   "Communication": {
     "CommunicationFileLocation": "../Communication/tmp",
     "WebsiteFileLocation": "../Communication/website",
+    "Origins": {
+      "LarryMain": "Main",
+      "WebScraper": "Scraper",
+      "CodexAccess": "Codex"
+    },
     "Formatting": {
-      "Prefix": "{Time}{Origin}:",
-      "Postfix": "\n"
+      "ParameterStart": "{",
+      "ParameterEnd": "}",
+      "Parameters": {
+        "Time": 0,
+        "Origin": 1
+      },
+      "Prefix": "&&",
+      "Postfix": "%%"
     }
   }
 }

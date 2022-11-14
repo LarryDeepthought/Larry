@@ -7,6 +7,7 @@ project (Larry)
 
 set(	SOURCES
 	Source/Scraper.hpp
+	Source/Useful.hpp
 
 	Source/Larry.cpp
 	Source/Scraper.cpp
