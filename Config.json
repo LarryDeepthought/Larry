@@ -1,0 +1,15 @@
+{
+  "ParameterStart": "{",
+  "ParameterEnd": "}",
+  "Scraper": {
+    "WebsiteURL": "https://adventofcode.com/{Year}/day/{Day}"
+  },
+  "Communication": {
+    "CommunicationFileLocation": "../Communication/tmp",
+    "WebsiteFileLocation": "../Communication/website",
+    "Formatting": {
+      "Prefix": "{Time}{Origin}:",
+      "Postfix": "\n"
+    }
+  }
+}
