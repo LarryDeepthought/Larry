@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -60,7 +61,7 @@ string Scraper::GetLastMessage()
 	size_t originIndex = ConfigJson["Communication"]["Formatting"]["Parameters"]["Origin"];
 	string parameterDelimiters[2] = { get_json_value(ConfigJson["Communication"]["Formatting"]["ParameterStart"]),
 									  get_json_value(ConfigJson["Communication"]["Formatting"]["ParameterEnd"]) };
-	messages.reserve(); // reordering so the last messages are on top
+	reverse(messages.begin(), messages.end()); // reordering so the last messages are on top
 	for (string message : messages)
 	{
 		pos = 0;
